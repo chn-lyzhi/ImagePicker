@@ -118,7 +118,10 @@ open class ImageGalleryView: UIView {
     topSeparator.addSubview(configuration.indicatorView)
 
     imagesBeforeLoading = 0
-    fetchPhotos()
+    
+    if configuration.includePhotoLibrary {
+        fetchPhotos()
+    }
   }
 
   // MARK: - Layout
@@ -160,12 +163,19 @@ open class ImageGalleryView: UIView {
   // MARK: - Photos handler
 
   func fetchPhotos(_ completion: (() -> Void)? = nil) {
-    AssetManager.fetch(withConfiguration: configuration) { assets in
-      self.assets.removeAll()
-      self.assets.append(contentsOf: assets)
-      self.collectionView.reloadData()
-
-      completion?()
+    if configuration.includePhotoLibrary {
+      AssetManager.fetch(withConfiguration: configuration) { assets in
+        self.assets.removeAll()
+        self.assets.append(contentsOf: assets)
+        self.collectionView.reloadData()
+        completion?()
+      }
+    } else {
+      AssetManager.fetchLast(withConfiguration: configuration) { (asset) in
+        self.assets.insert(asset, at: 0)
+        self.collectionView.reloadData()
+        completion?()
+      }
     }
   }
 

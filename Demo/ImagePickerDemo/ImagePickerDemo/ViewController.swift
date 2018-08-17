@@ -36,11 +36,14 @@ class ViewController: UIViewController, ImagePickerDelegate {
   }
 
   @objc func buttonTouched(button: UIButton) {
-    var config = Configuration()
+    let config = Configuration()
     config.doneButtonTitle = "Finish"
     config.noImagesTitle = "Sorry! There are no images here!"
     config.recordLocation = false
     config.allowVideoSelection = true
+    config.collapseCollectionViewWhileShot = false
+    config.managesAudioSession = false
+    config.includePhotoLibrary = true
 
     let imagePicker = ImagePickerController(configuration: config)
     imagePicker.delegate = self
@@ -66,6 +69,15 @@ class ViewController: UIViewController, ImagePickerDelegate {
   }
 
   func doneButtonDidPress(_ imagePicker: ImagePickerController, images: [UIImage]) {
-    imagePicker.dismiss(animated: true, completion: nil)
+    guard images.count > 0 else { return }
+    
+    let lightboxImages = images.map {
+        return LightboxImage(image: $0)
+    }
+    
+    let lightbox = LightboxController(images: lightboxImages, startIndex: 0)
+    imagePicker.dismiss(animated: true) {
+        self.present(lightbox, animated: true, completion: nil)
+    }
   }
 }

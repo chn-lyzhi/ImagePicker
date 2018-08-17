@@ -22,13 +22,32 @@ open class AssetManager {
       let fetchResult = configuration.allowVideoSelection
         ? PHAsset.fetchAssets(with: PHFetchOptions())
         : PHAsset.fetchAssets(with: .image, options: PHFetchOptions())
-
+        
       if fetchResult.count > 0 {
+        
         var assets = [PHAsset]()
         fetchResult.enumerateObjects({ object, _, _ in
           assets.insert(object, at: 0)
         })
 
+        DispatchQueue.main.async {
+          completion(assets)
+        }
+      }
+    }
+  }
+    
+  open static func fetchLast(withConfiguration configuration: Configuration, _ completion: @escaping (_ assets: PHAsset) -> Void) {
+    guard PHPhotoLibrary.authorizationStatus() == .authorized else { return }
+    DispatchQueue.global(qos: .background).async {
+      let options = PHFetchOptions()
+      options.fetchLimit = 1
+      options.sortDescriptors = [NSSortDescriptor(key: "creationDate", ascending: false)]
+        
+      let fetchResult = configuration.allowVideoSelection
+          ? PHAsset.fetchAssets(with: options)
+          : PHAsset.fetchAssets(with: .image, options: options)
+      if let assets = fetchResult.firstObject {
         DispatchQueue.main.async {
           completion(assets)
         }
