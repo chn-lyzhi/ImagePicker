@@ -1,6 +1,7 @@
 import UIKit
 import ImagePicker
 import Lightbox
+import Photos
 
 class ViewController: UIViewController, ImagePickerDelegate {
 
@@ -39,11 +40,11 @@ class ViewController: UIViewController, ImagePickerDelegate {
     let config = Configuration()
     config.doneButtonTitle = "Finish"
     config.noImagesTitle = "Sorry! There are no images here!"
-    config.recordLocation = false
+    config.recordLocation = true
     config.allowVideoSelection = true
-    config.collapseCollectionViewWhileShot = false
+    config.collapseCollectionViewWhileShot = true
     config.managesAudioSession = false
-    config.includePhotoLibrary = true
+    config.includePhotoLibrary = false
 
     let imagePicker = ImagePickerController(configuration: config)
     imagePicker.delegate = self
@@ -79,5 +80,9 @@ class ViewController: UIViewController, ImagePickerDelegate {
     imagePicker.dismiss(animated: true) {
         self.present(lightbox, animated: true, completion: nil)
     }
+  }
+  
+  func doneButtonDidPress(_ imagePicker: ImagePickerController, assets: [PHAsset]) {
+    assets.forEach({ print($0.location) })
   }
 }

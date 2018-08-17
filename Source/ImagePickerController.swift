@@ -6,6 +6,7 @@ import Photos
 
   func wrapperDidPress(_ imagePicker: ImagePickerController, images: [UIImage])
   func doneButtonDidPress(_ imagePicker: ImagePickerController, images: [UIImage])
+  @objc optional func doneButtonDidPress(_ imagePicker: ImagePickerController, assets: [PHAsset])
   func cancelButtonDidPress(_ imagePicker: ImagePickerController)
 }
 
@@ -163,6 +164,8 @@ open class ImagePickerController: UIViewController {
 
     UIAccessibilityPostNotification(UIAccessibilityScreenChangedNotification,
                                     bottomContainer);
+    
+    if configuration.includePhotoLibrary == false { collapseGalleryView(nil) }
   }
 
   open func resetAssets() {
@@ -377,7 +380,7 @@ extension ImagePickerController: BottomContainerViewDelegate {
     } else {
       images = AssetManager.resolveAssets(stack.assets)
     }
-
+    delegate?.doneButtonDidPress?(self, assets: Array(stack.assets))
     delegate?.doneButtonDidPress(self, images: images)
   }
 
