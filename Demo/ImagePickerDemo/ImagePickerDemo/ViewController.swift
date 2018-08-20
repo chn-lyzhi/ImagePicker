@@ -83,6 +83,6 @@ class ViewController: UIViewController, ImagePickerDelegate {
   }
   
   func doneButtonDidPress(_ imagePicker: ImagePickerController, assets: [PHAsset]) {
-    assets.forEach({ print($0.location) })
+    assets.forEach({ print($0.location ?? "null") })
   }
 }
